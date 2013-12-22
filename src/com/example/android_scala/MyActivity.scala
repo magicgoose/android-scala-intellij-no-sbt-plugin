@@ -28,86 +28,87 @@ import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import scala.util.continuations._
+import android.widget.TextView
 
-class MyActivity extends Activity
-{
-    /**
-     * Test random scala stuff and see if it works on Android
-     */
-    override def onCreate(savedInstanceState: Bundle)
-    {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.main)
+class MyActivity extends Activity {
+  /**
+   * Test random scala stuff and see if it works on Android
+   */
 
-        val a = new Complex(4.0, 5.0)
-        val b = new Complex(2.0, 3.0)
-        Log.d("MyActivity", "Printing scala test stuff")
-        Log.d("MyActivity", (a + b).toString)
-        Log.d("MyActivity", (a - b).toString)
-        Log.d("MyActivity", a.toString)
-        Log.d("MyActivity", b.toString)
-        Log.d("MyActivity", baz().toString)
-        Log.d("MyActivity", test().toString)
-        Log.d("MyActivity", fun())
+  var textView: TextView = null
+
+  def write(text: CharSequence): Unit = {
+    textView.append(text)
+    textView.append("\n")
+  }
+
+  override def onCreate(savedInstanceState: Bundle) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.main)
+
+    textView = this.findViewById(R.id.text).asInstanceOf[TextView]
+    textView.setText("")
+
+    val a = new Complex(4.0, 5.0)
+    val b = new Complex(2.0, 3.0)
+    write("Printing scala test stuff")
+    write((a + b).toString)
+    write((a - b).toString)
+    write(a.toString)
+    write(b.toString)
+    write(baz().toString)
+    write(test().toString)
+    write(fun())
+  }
+
+  def fun() = {
+    write("Not part of reset and so not part of the reified function.")
+    reset {
+      shift {
+        // yes, the ⇒ actually works.
+        k: (Int ⇒ Int) ⇒ // Reify reset body into Int => Int function
+          write("Calling reified function with value 2")
+          k(2)
+      } * 300 // reset body _ * 300
     }
 
+    write("Outside of reset. Thus not part of the delimited continuation")
 
-    def fun() =
-    {
-        Log.d("MyActivity", "Not part of reset and so not part of the reified function.")
-        reset {
-            shift {
-                // yes, the ⇒ actually works.
-                k: (Int ⇒ Int) ⇒ // Reify reset body into Int => Int function
-                    Log.d("MyActivity", "Calling reified function with value 2")
-                    k(2)
-            } * 300 // reset body _ * 300
-        }
+    "Delimited continuations are ridiculous" // return value of fun
+  }
 
-        Log.d("MyActivity", "Outside of reset. Thus not part of the delimited continuation")
+  def test(): Int = {
+    reset {
+      shift {
+        k: (Int ⇒ Int) ⇒
+          k(k(k(7)))
+      } + 1
+    } * 2
+  }
 
-        "Delimited continuations are ridiculous" // return value of fun
-    }
+  def foo() = {
+    write("Once here.")
+    shift((k: Int ⇒ Int) ⇒ k(k(k(7))))
+  }
 
-    def test(): Int =
-    {
-        reset {
-            shift {
-                k: (Int ⇒ Int) ⇒
-                    k(k(k(7)))
-            } + 1
-        } * 2
-    }
+  def bar() = {
+    1 + foo()
+  }
 
-    def foo() =
-    {
-        println("Once here.")
-        shift((k: Int ⇒ Int) ⇒ k(k(k(7))))
-    }
-
-    def bar() =
-    {
-        1 + foo()
-    }
-
-    def baz() =
-    {
-        reset(bar() * 2)
-    }
+  def baz() = {
+    reset(bar() * 2)
+  }
 
 
-    class Complex(val real: Double, val imag: Double)
-    {
+  class Complex(val real: Double, val imag: Double) {
 
-        def +(that: Complex) =
-            new Complex(this.real + that.real, this.imag + that.imag)
+    def +(that: Complex) =
+      new Complex(this.real + that.real, this.imag + that.imag)
 
-        def -(that: Complex) =
-            new Complex(this.real - that.real, this.imag - that.imag)
+    def -(that: Complex) =
+      new Complex(this.real - that.real, this.imag - that.imag)
 
-        override def toString = real + " + " + imag + "i"
+    override def toString = real + " + " + imag + "i"
 
-    }
-
-
+  }
 }
