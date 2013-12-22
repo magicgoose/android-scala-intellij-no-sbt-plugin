@@ -19,7 +19,7 @@
         <option name="explainTypeErrors" value="true" />
         <option name="pluginPaths">
           <array>
-            <option value="D:\Program Files (x86)\scala\misc\scala-devel\plugins\continuations.jar" />
+            <option value="C:\scala\misc\scala-devel\plugins\continuations.jar" />
           </array>
         </option>
         <option name="uncheckedWarnings" value="true" />
@@ -32,7 +32,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
     </content>
-    <orderEntry type="jdk" jdkName="Android 4.4 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="Android API 18 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="scala-library" level="application" />
   </component>
